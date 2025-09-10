@@ -48,3 +48,41 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/password/store', [PasswordCreationController::class, 'store'])->name('password.store');
 
 });
+
+Route::get('/setup-initial-data', function() {
+    // Prevent this from running if an admin already exists
+    if (\App\Models\User::where('is_admin', true)->exists()) {
+        return 'Setup has already been run. This route is disabled.';
+    }
+
+    // 1. Create the Admin User
+    \App\Models\User::create([
+    'name' => 'Admin',
+    'surname' => 'User',
+    'sa_id_number' => '0000000000000', 
+    'mobile_number' => '0820000000', 
+    'email' => 'admin@example.com',
+    'birth_date' => '1997-01-01', 
+    'language' => 'English', 
+    'password' => Hash::make('ProPay#Revo6BacoZAP@Ha'), 
+    'is_admin' => true,
+    'email_verified_at' => now()
+]);
+
+    // 2. Create the Interests
+    \App\Models\Interest::firstOrCreate(['name' => 'Technology']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Reading']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Learning']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Coding']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Plants']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Piano']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Music']);
+    \App\Models\Interest::firstOrCreate(['name' => 'The Moon']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Physics']);
+    \App\Models\Interest::firstOrCreate(['name' => 'History']);
+    \App\Models\Interest::firstOrCreate(['name' => 'Knowledge']);
+
+   
+
+    return '<h1>Setup Complete!</h1><p>The Admin user and Interests have been created. <strong>Please remove the /setup-initial-data route from your web.php file immediately.</strong></p>';
+});
