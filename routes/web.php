@@ -49,40 +49,41 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+// --- TEMPORARY SETUP ROUTE - REMOVE AFTER USE! ---
 Route::get('/setup-initial-data', function() {
-    // Prevent this from running if an admin already exists
-    if (\App\Models\User::where('is_admin', true)->exists()) {
-        return 'Setup has already been run. This route is disabled.';
+    try {
+        // Run migrations to ensure all tables exist.
+        // The --force flag is required to run migrations in production.
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+
+        // Prevent this from running if an admin already exists
+        if (\App\Models\User::where('is_admin', true)->exists()) {
+            return 'Setup has already been run. This route is disabled.';
+        }
+
+        // 1. Create the Admin User
+        \App\Models\User::create([
+            'name' => 'Admin',
+            'surname' => 'User',
+            'sa_id_number' => '0000000000000',
+            'language' => 'English',
+            'email' => 'your.admin.email@example.com', // IMPORTANT: Change this!
+            'password' => Illuminate\Support\Facades\Hash::make('Your-New-Super-Secure-Password!'), // IMPORTANT: Change this!
+            'is_admin' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        // 2. Create the Interests
+        \App\Models\Interest::firstOrCreate(['name' => 'Technology']);
+        \App\Models\Interest::firstOrCreate(['name' => 'Sports']);
+        \App\Models\Interest::firstOrCreate(['name' => 'Music']);
+        \App\Models\Interest::firstOrCreate(['name' => 'Art']);
+        \App\Models\Interest::firstOrCreate(['name' => 'Travel']);
+
+        return '<h1>Setup Complete!</h1><p>The Admin user and Interests have been created. <strong>Please remove the /setup-initial-data route from your web.php file immediately.</strong></p>';
+
+    } catch (Exception $e) {
+        // If something goes wrong, display the error.
+        return '<h1>Error during setup:</h1><pre>' . $e->getMessage() . '</pre>';
     }
-
-    // 1. Create the Admin User
-    \App\Models\User::create([
-    'name' => 'Admin',
-    'surname' => 'User',
-    'sa_id_number' => '0000000000000', 
-    'mobile_number' => '0820000000', 
-    'email' => 'admin@example.com',
-    'birth_date' => '1997-01-01', 
-    'language' => 'English', 
-    'password' => Hash::make('ProPay#Revo6BacoZAP@Ha'), 
-    'is_admin' => true,
-    'email_verified_at' => now()
-]);
-
-    // 2. Create the Interests
-    \App\Models\Interest::firstOrCreate(['name' => 'Technology']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Reading']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Learning']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Coding']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Plants']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Piano']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Music']);
-    \App\Models\Interest::firstOrCreate(['name' => 'The Moon']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Physics']);
-    \App\Models\Interest::firstOrCreate(['name' => 'History']);
-    \App\Models\Interest::firstOrCreate(['name' => 'Knowledge']);
-
-   
-
-    return '<h1>Setup Complete!</h1><p>The Admin user and Interests have been created. <strong>Please remove the /setup-initial-data route from your web.php file immediately.</strong></p>';
 });
