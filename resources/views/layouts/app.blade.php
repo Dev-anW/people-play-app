@@ -19,10 +19,10 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 <style>
     body {
-        background-color: #f4f6f9 !important; /* Secondary Colour */
+        background-color: #f4f6f9 !important; 
     }
     .navbar {
-        background-color: #294858 !important; /* Primary Colour */
+        background-color: #294858 !important; 
     }
     .card {
         background-color: #ffffff !important;
@@ -33,7 +33,7 @@
     }
     .list-group-item.bg-transparent.text-white {
         background-color: transparent !important;
-        color: #212529 !important; /* Change text to dark */
+        color: #212529 !important; 
     }
      .navbar-brand {
         color: #ffffff !important;
