@@ -10,6 +10,7 @@ WORKDIR /var/www/html
 # - common libraries for image processing, zip, etc.
 RUN apk add --no-cache \
     nginx \
+    gettext \
     postgresql-dev \
     libzip-dev \
     zlib-dev \
@@ -23,7 +24,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     pdo pdo_pgsql zip gd
 
 # Copy our custom Nginx configuration into the container
-COPY nginx.conf /etc/nginx/http.d/default.conf
+COPY nginx.conf.template /etc/nginx/http.d/nginx.conf.template
 
 # Copy the start-up script into the container
 COPY start.sh /usr/local/bin/start.sh
