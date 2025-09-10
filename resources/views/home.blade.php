@@ -26,7 +26,7 @@
                     </div>
                 </div>
 
-                {{-- Admin Guide Card (Updated with Button) --}}
+                {{-- Admin Guide Card --}}
                 <div class="card">
                     <div class="card-header">
                         Admin Guide
