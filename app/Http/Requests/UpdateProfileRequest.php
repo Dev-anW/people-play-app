@@ -10,12 +10,12 @@ class UpdateProfileRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Authorization is handled by the auth middleware
+        return true; 
     }
 
     public function rules(): array
     {
-        $userId = Auth::id(); // Get the current user's ID
+        $userId = Auth::id(); 
 
         return [
             'name' => 'required|string|max:255',
