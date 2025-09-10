@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     });
 
-    // Routes for creating the initial password (must NOT have the middleware above)
+    
     Route::get('/password/create', [PasswordCreationController::class, 'create'])->name('password.create');
     Route::post('/password/store', [PasswordCreationController::class, 'store'])->name('password.store');
 
