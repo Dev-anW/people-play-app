@@ -20,13 +20,13 @@ class AdminChangeRequestController extends Controller
     {
         $user = $request->user;
 
-        // Loop through the requested data and update the user model
+        
         foreach ($request->requested_data as $field => $value) {
             $user->{$field} = $value;
         }
         $user->save();
 
-        // Update the request status
+       
         $request->status = 'approved';
         $request->reviewed_by = Auth::id();
         $request->reviewed_at = now();
