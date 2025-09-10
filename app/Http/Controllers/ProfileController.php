@@ -29,15 +29,15 @@ class ProfileController extends Controller
 {
     $user = Auth::user();
 
-    // 1. Interests can still be updated directly
+  
     $user->interests()->sync($request->input('interests', []));
 
-    // 2. Get all validated data for the change request
+   
     $validatedData = $request->validated();
-    // Remove interests since we already handled them
+    
     unset($validatedData['interests']);
 
-    // 3. Create the change request record
+    
     UserChangeRequest::create([
         'user_id' => $user->id,
         'requested_data' => $validatedData,
