@@ -145,7 +145,7 @@
         {{-- This content is for logged-in users ONLY --}}
         <a href="{{ route('home') }}" class="btn btn-primary">Go to My Dashboard</a>
 
-        {{-- The logout button must be a form for security --}}
+       
         <form id="logout-form" action="{{ route('logout') }}" method="POST">
             @csrf
             <a href="{{ route('logout') }}"
