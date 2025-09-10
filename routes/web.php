@@ -56,11 +56,6 @@ Route::get('/setup-initial-data', function() {
         // The --force flag is required to run migrations in production.
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
 
-        // Prevent this from running if an admin already exists
-        if (\App\Models\User::where('is_admin', true)->exists()) {
-            return 'Setup has already been run. This route is disabled.';
-        }
-
         // 1. Create the Admin User
         \App\Models\User::create([
             'name' => 'Admin',
