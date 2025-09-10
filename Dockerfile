@@ -38,6 +38,10 @@ COPY . .
 # Install Composer dependencies
 RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
+RUN php artisan key:generate --force
+RUN php artisan config:cache
+RUN php artisan route:cache
+
 # Set correct permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
