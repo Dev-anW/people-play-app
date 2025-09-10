@@ -67,8 +67,8 @@ Route::get('/setup-initial-data', function() {
             'surname' => 'User',
             'sa_id_number' => '0000000000000',
             'language' => 'English',
-            'email' => 'your.admin.email@example.com', // IMPORTANT: Change this!
-            'password' => Illuminate\Support\Facades\Hash::make('Your-New-Super-Secure-Password!'), // IMPORTANT: Change this!
+            'email' => 'admin@example.com',
+            'password' => Illuminate\Support\Facades\Hash::make('ProPay#Revo6BacoZAP@Ha'), 
             'is_admin' => true,
             'email_verified_at' => now(),
         ]);
