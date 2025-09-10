@@ -22,10 +22,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
 {
-    // Start building the query for non-admin users
+    
     $query = User::query()->where('is_admin', false);
 
-    // 1. Handle the search functionality
+    
     if ($request->filled('search')) {
         $searchTerm = $request->input('search');
         $query->where(function ($q) use ($searchTerm) {
@@ -35,43 +35,43 @@ class UserController extends Controller
         });
     }
 
-    // 2. Handle filtering by interest
+   
     if ($request->filled('interest_id')) {
         $query->whereHas('interests', function ($q) use ($request) {
             $q->where('interests.id', $request->input('interest_id'));
         });
     }
 
-    // 3. Handle filtering by verified status
+   
     if ($request->filled('verified')) {
         if ($request->input('verified') == '1') {
-            $query->whereNotNull('email_verified_at'); // Verified users
+            $query->whereNotNull('email_verified_at');
         } else {
-            $query->whereNull('email_verified_at'); // Unverified users
+            $query->whereNull('email_verified_at'); 
         }
     }
 
-    // 4. Handle sorting options
+   
     if ($request->filled('sort')) {
         $sort = $request->input('sort');
         if ($sort == 'name_asc') {
             $query->orderBy('name', 'asc');
         } elseif ($sort == 'name_desc') {
             $query->orderBy('name', 'desc');
-        } elseif ($sort == 'age_asc') { // Youngest first
+        } elseif ($sort == 'age_asc') {
             $query->orderBy('birth_date', 'desc');
-        } elseif ($sort == 'age_desc') { // Oldest first
+        } elseif ($sort == 'age_desc') { 
             $query->orderBy('birth_date', 'asc');
         }
     } else {
-        // Default sort if nothing is selected
+        
         $query->latest();
     }
 
-    // Fetch all interests for the filter dropdown
+    
     $interests = Interest::orderBy('name')->get();
 
-    // Paginate the results and append the query string to the links
+    
     $users = $query->paginate(10)->withQueryString();
 
     return view('users.index', compact('users', 'interests'));
@@ -94,41 +94,32 @@ class UserController extends Controller
     {
     try {
         DB::transaction(function () use ($request) {
-            // 1. Generate a random 8-character password
+            
             $temporaryPassword = Str::random(8);
 
-            // 2. Get validated data and add the hashed password
             $userData = $request->validated();
             $userData['password'] = Hash::make($temporaryPassword);
 
-            // 3. Create the user IN THE TRANSACTION
             $user = User::create($userData);
 
-            // 4. Sync interests IN THE TRANSACTION
+            
             $user->interests()->sync($request->input('interests', []));
 
-            // 5. Attempt to send the welcome email
-            // If THIS line fails, it will throw an exception.
+            
             Mail::to($user->email)->send(new NewUserWelcomeMail($user, $temporaryPassword));
 
-            // If the code reaches here, it means the user was created AND
-            // the email was sent successfully. The transaction will be automatically committed.
+          
         });
 
-        // If the transaction completes without errors, redirect with success message.
+       
         return redirect()->route('users.index')
                          ->with('success', 'User created successfully and welcome email sent.');
 
     } catch (Exception $e) {
-        // If any exception occurred (e.g., mail server is down, wrong credentials)
-
-        // 1. Log the detailed error for the developer to see.
-        // This is crucial for debugging! Check your storage/logs/laravel.log file.
+        
         Log::error('Failed to create new user: ' . $e->getMessage());
 
-        // 2. Redirect the admin back to the form with an error message.
-        // The database transaction has already been automatically rolled back.
-        // withInput() repopulates the form with the data the admin already entered.
+        
         return redirect()->back()
                          ->with('error', 'Failed to create user. Could not send welcome email. Please check mail configuration and try again.')
                          ->withInput();
@@ -140,7 +131,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        // Eager load the interests to prevent extra database queries
+        
         $user->load('interests');
         return view('users.show', compact('user'));
     }
@@ -160,9 +151,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        // Validation is handled by UpdateUserRequest
-        // Note: We are not updating the password here, which is standard
-        // for an admin panel. A password reset flow is a separate feature.
+       
         $user->update($request->validated());
         $user->interests()->sync($request->input('interests', []));
 
