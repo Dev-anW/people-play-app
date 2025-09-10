@@ -26,15 +26,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy the application source code and Nginx template
 COPY . .
 
+# THIS IS THE FIX: Copy our custom PHP-FPM configuration into the container.
+# This forces PHP-FPM to use our desired socket connection settings.
+COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Set permissions and make start script executable
+RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
+RUN chmod +x /var/www/html/start.sh
+
 # Install Composer dependencies
 RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
-
 # Create the start.sh script inside the container to avoid formatting issues.
-# This script creates a complete, standalone nginx.conf from our template.
 RUN echo '#!/bin/sh' > /var/www/html/start.sh && \
     echo 'set -e' >> /var/www/html/start.sh && \
     echo "envsubst '\${PORT}' < /var/www/html/nginx.conf.template > /etc/nginx/nginx.conf" >> /var/www/html/start.sh && \
@@ -44,7 +48,7 @@ RUN echo '#!/bin/sh' > /var/www/html/start.sh && \
     echo 'php-fpm &' >> /var/www/html/start.sh && \
     echo "nginx -c /etc/nginx/nginx.conf -g 'daemon off;'" >> /var/www/html/start.sh
 
-# Make the newly created script executable
+# Re-apply executable permissions to the script we just created
 RUN chmod +x /var/www/html/start.sh
 
 # Expose port 80
