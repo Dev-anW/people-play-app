@@ -1,4 +1,4 @@
-# This is the full Nginx configuration template.
+# A complete, self-contained Nginx configuration file template.
 worker_processes auto;
 error_log /dev/stderr warn;
 pid /var/run/nginx.pid;
@@ -21,20 +21,25 @@ http {
 
         index index.php;
 
+        # THIS IS THE FIX: Add a specific location block for static assets.
+        # This tells Nginx to serve CSS, JS, images, etc., directly.
+        location ~ \.(css|js|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$ {
+            try_files $uri =404;
+            expires 1y;
+            access_log off;
+            add_header Cache-Control "public";
+        }
+
+        # This block handles all other requests by passing them to Laravel.
         location / {
             try_files $uri $uri/ /index.php?$query_string;
         }
 
         location ~ \.php$ {
-            # This is the critical change. We are switching to a TCP socket.
             fastcgi_pass 127.0.0.1:9000;
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             include fastcgi_params;
-        }
-
-        location ~ /\.ht {
-            deny all;
         }
     }
 }
