@@ -1,5 +1,4 @@
-# A complete, self-contained Nginx configuration file template.
-# This avoids any conflicts with the base image's default settings.
+# This is the full Nginx configuration template.
 worker_processes auto;
 error_log /dev/stderr warn;
 pid /var/run/nginx.pid;
@@ -15,9 +14,7 @@ http {
     sendfile on;
     keepalive_timeout 65;
 
-    # This is our actual server configuration block, now correctly nested.
     server {
-        # This variable will be replaced by the start.sh script with Render's port.
         listen ${PORT};
         server_name localhost;
         root /var/www/html/public;
@@ -29,13 +26,13 @@ http {
         }
 
         location ~ \.php$ {
-            fastcgi_pass unix:/var/run/php-fpm.sock;
+            # This is the critical change. We are switching to a TCP socket.
+            fastcgi_pass 127.0.0.1:9000;
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             include fastcgi_params;
         }
 
-        # Deny access to hidden files.
         location ~ /\.ht {
             deny all;
         }
