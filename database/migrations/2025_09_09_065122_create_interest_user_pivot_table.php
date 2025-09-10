@@ -14,7 +14,7 @@ return new class extends Migration
   public function up(): void
 {
     Schema::create('interest_user', function (Blueprint $table) {
-        $table->primary(['user_id', 'interest_id']); // Ensures a user can't have the same interest twice
+        $table->primary(['user_id', 'interest_id']);
 
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
         $table->foreignId('interest_id')->constrained()->onDelete('cascade');
