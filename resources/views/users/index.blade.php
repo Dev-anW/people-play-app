@@ -7,10 +7,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2>User Management</h2>
                 <div>
-        {{-- ADD THIS NEW BUTTON --}}
         <a class="btn btn-secondary me-2" href="{{ route('home') }}">Back to Dashboard</a>
-        {{-- END OF NEW BUTTON --}}
-
         <a class="btn btn-success" href="{{ route('users.create') }}"> Create New User</a>
     </div>
             </div>
