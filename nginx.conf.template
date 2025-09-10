@@ -1,41 +1,32 @@
-# A complete Nginx configuration file template
-worker_processes auto;
-error_log /dev/stderr warn;
-pid /var/run/nginx.pid;
+# This file contains ONLY the server block.
+# The main nginx.conf from the base image will include this.
+server {
+    # This variable will be replaced by the start.sh script with Render's port
+    listen ${PORT};
+    server_name localhost;
+    root /var/www/html/public;
 
-events {
-    worker_connections 1024;
-}
+    index index.php;
 
-http {
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
-    access_log /dev/stdout;
-    sendfile on;
-    keepalive_timeout 65;
+    # Add headers to prevent caching issues with APIs and dynamic content
+    add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+    expires off;
+    etag off;
+    proxy_buffering off;
+    proxy_cache off;
 
-    # This is our actual server configuration block, now correctly nested
-    server {
-        # This variable will be replaced by the start.sh script with Render's port
-        listen ${PORT};
-        server_name localhost;
-        root /var/www/html/public;
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
 
-        index index.php;
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
 
-        location / {
-            try_files $uri $uri/ /index.php?$query_string;
-        }
-
-        location ~ \.php$ {
-            fastcgi_pass unix:/var/run/php-fpm.sock;
-            fastcgi_index index.php;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            include fastcgi_params;
-        }
-
-        location ~ /\.ht {
-            deny all;
-        }
+    location ~ /\.ht {
+        deny all;
     }
 }
