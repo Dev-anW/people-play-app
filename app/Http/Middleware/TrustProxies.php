@@ -12,8 +12,7 @@ class TrustProxies extends Middleware
      *
      * @var array<int, string>|string|null
      */
-    // THIS IS THE FIX: We are telling Laravel to trust any proxy.
-    // This is safe and necessary for platforms like Render.
+    
     protected $proxies = '*';
 
     /**
