@@ -21,16 +21,10 @@ http {
 
         index index.php;
 
-        # THIS IS THE FIX: Add a specific location block for static assets.
-        # This tells Nginx to serve CSS, JS, images, etc., directly.
-        location ~ \.(css|js|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$ {
-            try_files $uri =404;
-            expires 1y;
-            access_log off;
-            add_header Cache-Control "public";
-        }
+        add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+        expires off;
+        etag off;
 
-        # This block handles all other requests by passing them to Laravel.
         location / {
             try_files $uri $uri/ /index.php?$query_string;
         }
@@ -40,6 +34,14 @@ http {
             fastcgi_index index.php;
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             include fastcgi_params;
+
+            # THIS IS THE FIX: Increase buffer sizes for POST requests
+            fastcgi_buffers 16 16k;
+            fastcgi_buffer_size 32k;
+        }
+
+        location ~ /\.ht {
+            deny all;
         }
     }
 }
