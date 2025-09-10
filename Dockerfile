@@ -15,6 +15,9 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev
 
+# THIS IS THE FIX: Explicitly create the Nginx config directory
+RUN mkdir -p /etc/nginx/conf.d/
+
 # Install the required PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
@@ -26,7 +29,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy the entire application source code
 COPY . .
 
-# THIS IS THE FIX: Make the startup script executable
+# Make the startup script executable
 RUN chmod +x /var/www/html/start.sh
 
 # Install Composer dependencies without dev packages
