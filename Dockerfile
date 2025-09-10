@@ -5,7 +5,6 @@ FROM php:8.2-fpm-alpine
 WORKDIR /var/www/html
 
 # Install system dependencies needed for Laravel and Nginx
-# gettext is for the 'envsubst' utility used in our start script
 RUN apk add --no-cache \
     nginx \
     gettext \
@@ -27,8 +26,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy the entire application source code
 COPY . .
 
+# THIS IS THE FIX: Make the startup script executable
+RUN chmod +x /var/www/html/start.sh
+
 # Install Composer dependencies without dev packages
-# This is a build-time step and does not require a .env file
 RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
 # Set correct permissions on folders Laravel needs to write to
