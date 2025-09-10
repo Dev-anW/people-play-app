@@ -49,23 +49,3 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-// --- TEMPORARY ROUTE TO ADD A NEW ADMIN - REMOVE AFTER USE! ---
-Route::get('/create-second-admin-account', function() {
-    // Check if the new admin already exists to prevent duplicates
-    if (\App\Models\User::where('email', 'new.admin.email@example.com')->exists()) {
-        return 'This specific admin user has already been created.';
-    }
-
-    \App\Models\User::create([
-        'name' => 'Admin', // IMPORTANT: Set the name for the new admin
-        'surname' => 'Test', // IMPORTANT: Set the surname
-        'sa_id_number' => '1111111111111', // Use a unique placeholder
-        'language' => 'English',
-        'email' => 'admin@example.com', // IMPORTANT: Set the new admin's email!
-        'password' => Illuminate\Support\Facades\Hash::make('Another-Very-Strong-Password!'), // IMPORTANT: Set a new strong password!
-        'is_admin' => true,
-        'email_verified_at' => now(),
-    ]);
-
-    return '<h1>New Admin Created Successfully!</h1><p><strong>SECURITY WARNING:</strong> Please remove the /create-second-admin-account route from your web.php file and deploy the change immediately.</p>';
-});
