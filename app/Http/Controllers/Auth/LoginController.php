@@ -45,7 +45,6 @@ class LoginController extends Controller
     */
     protected function redirectTo()
 {
-    // No need for an if/else here anymore. Everyone goes to the smart dashboard.
     return '/home';
 }
 }
