@@ -22,7 +22,7 @@
                         @csrf
                         @method('PUT')
 
-                        {{-- The reusable form partial needs to be updated to support readonly fields --}}
+                        
                         @include('users._form', ['isRequest' => true])
 
                         <div class="text-center mt-4">
