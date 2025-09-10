@@ -49,36 +49,23 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-// --- TEMPORARY SETUP ROUTE - REMOVE AFTER USE! ---
-Route::get('/setup-initial-data', function() {
-    try {
-        // Run migrations to ensure all tables exist.
-        // The --force flag is required to run migrations in production.
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-
-        // 1. Create the Admin User
-        \App\Models\User::create([
-            'name' => 'Admin',
-            'surname' => 'User',
-            'sa_id_number' => '0000000000000',
-            'language' => 'English',
-            'email' => 'admin@example.com',
-            'password' => Illuminate\Support\Facades\Hash::make('ProPay#Revo6BacoZAP@Ha'), 
-            'is_admin' => true,
-            'email_verified_at' => now(),
-        ]);
-
-        // 2. Create the Interests
-        \App\Models\Interest::firstOrCreate(['name' => 'Technology']);
-        \App\Models\Interest::firstOrCreate(['name' => 'Sports']);
-        \App\Models\Interest::firstOrCreate(['name' => 'Music']);
-        \App\Models\Interest::firstOrCreate(['name' => 'Art']);
-        \App\Models\Interest::firstOrCreate(['name' => 'Travel']);
-
-        return '<h1>Setup Complete!</h1><p>The Admin user and Interests have been created. <strong>Please remove the /setup-initial-data route from your web.php file immediately.</strong></p>';
-
-    } catch (Exception $e) {
-        // If something goes wrong, display the error.
-        return '<h1>Error during setup:</h1><pre>' . $e->getMessage() . '</pre>';
+// --- TEMPORARY ROUTE TO ADD A NEW ADMIN - REMOVE AFTER USE! ---
+Route::get('/create-second-admin-account', function() {
+    // Check if the new admin already exists to prevent duplicates
+    if (\App\Models\User::where('email', 'new.admin.email@example.com')->exists()) {
+        return 'This specific admin user has already been created.';
     }
+
+    \App\Models\User::create([
+        'name' => 'Admin', // IMPORTANT: Set the name for the new admin
+        'surname' => 'Test', // IMPORTANT: Set the surname
+        'sa_id_number' => '1111111111111', // Use a unique placeholder
+        'language' => 'English',
+        'email' => 'admin@example.com', // IMPORTANT: Set the new admin's email!
+        'password' => Illuminate\Support\Facades\Hash::make('Another-Very-Strong-Password!'), // IMPORTANT: Set a new strong password!
+        'is_admin' => true,
+        'email_verified_at' => now(),
+    ]);
+
+    return '<h1>New Admin Created Successfully!</h1><p><strong>SECURITY WARNING:</strong> Please remove the /create-second-admin-account route from your web.php file and deploy the change immediately.</p>';
 });
