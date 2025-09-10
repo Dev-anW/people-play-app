@@ -16,9 +16,9 @@ return new class extends Migration
     Schema::create('user_change_requests', function (Blueprint $table) {
         $table->id();
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->json('requested_data'); // Stores the changes the user wants
+        $table->json('requested_data'); 
         $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-        $table->foreignId('reviewed_by')->nullable()->constrained('users'); // The admin who reviewed it
+        $table->foreignId('reviewed_by')->nullable()->constrained('users'); 
         $table->timestamp('reviewed_at')->nullable();
         $table->timestamps();
     });
