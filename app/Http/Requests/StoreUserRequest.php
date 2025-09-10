@@ -11,7 +11,7 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // We are handling authorization via middleware, so we can return true here.
+        
         return true;
     }
 
@@ -30,8 +30,8 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|email|max:255|unique:users,email',
             'birth_date' => 'nullable|date',
             'language' => 'required|string|max:255',
-            'interests' => 'nullable|array', // Ensures 'interests' is an array if present
-            'interests.*' => 'integer|exists:interests,id', // Ensures each item in the array is a valid interest ID
+            'interests' => 'nullable|array',
+            'interests.*' => 'integer|exists:interests,id', 
         ];
     }
 }
