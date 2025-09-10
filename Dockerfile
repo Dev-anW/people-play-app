@@ -15,9 +15,6 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev
 
-# Create the Nginx config directory
-RUN mkdir -p /etc/nginx/conf.d/
-
 # Install the required PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
@@ -36,16 +33,16 @@ RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoload
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# THIS IS THE FIX: Create the start.sh script inside the container
-# This avoids all local file formatting and line ending issues.
+# Create the start.sh script inside the container to avoid formatting issues.
+# This script creates a complete, standalone nginx.conf from our template.
 RUN echo '#!/bin/sh' > /var/www/html/start.sh && \
     echo 'set -e' >> /var/www/html/start.sh && \
-    echo "envsubst '\${PORT}' < /var/www/html/nginx.conf.template > /etc/nginx/conf.d/default.conf" >> /var/www/html/start.sh && \
+    echo "envsubst '\${PORT}' < /var/www/html/nginx.conf.template > /etc/nginx/nginx.conf" >> /var/www/html/start.sh && \
     echo 'php artisan config:cache' >> /var/www/html/start.sh && \
     echo 'php artisan route:cache' >> /var/www/html/start.sh && \
     echo 'php artisan view:cache' >> /var/www/html/start.sh && \
     echo 'php-fpm &' >> /var/www/html/start.sh && \
-    echo 'nginx -g "daemon off;"' >> /var/www/html/start.sh
+    echo "nginx -c /etc/nginx/nginx.conf -g 'daemon off;'" >> /var/www/html/start.sh
 
 # Make the newly created script executable
 RUN chmod +x /var/www/html/start.sh
